@@ -2,12 +2,11 @@
 
 # pyMultiWii
 
-
 Handles the MultiWii Serial Protocol to send/receive data from boards.
 
 This is a text based / console, no GUI, it works reading data from the multicopter and/or sending commands from a computer via a serial modem. I use this module for doing different request to my multicopters in order to control them wirelessly via a raspberry pie.
 
-## Installation 
+## Installation
 
 To install with pip run the following command from this directory,
 
@@ -42,12 +41,12 @@ $<header>,<direction>,<size>,<command>,<crc>$
 
 where:
 
-* header: the ASCII characters `$\$M$`
-* direction: the ASCII character `$<$` if the message goes to the MultiWii board or `$>$` if the message is coming from the board
-* size: number of data bytes, binary. Can be zero as in the case of a data request to the board
-* command: message id of MSP
-* data: values to be sent. UINT16 values are LSB first
-* crc: (cyclic redundancy check) checksum, XOR of `$<size>,<command>$` and each data byte into a zero sum
+- header: the ASCII characters `$\$M$`
+- direction: the ASCII character `$<$` if the message goes to the MultiWii board or `$>$` if the message is coming from the board
+- size: number of data bytes, binary. Can be zero as in the case of a data request to the board
+- command: message id of MSP
+- data: values to be sent. UINT16 values are LSB first
+- crc: (cyclic redundancy check) checksum, XOR of `$<size>,<command>$` and each data byte into a zero sum
 
 ### Data Flow
 
@@ -70,9 +69,9 @@ if __name__ == "__main__":
     try:
         while True:
             board.getData(MultiWii.ATTITUDE)
-            print board.attitude 
+            print(board.attitude)
     except Exception,error:
-        print "Error on Main: "+str(error)
+        print("Error on Main: "+str(error))
 ```
 
 This module can achieve communication back and forth of 300hz, this was achieved using a Naze32 (32bits micro-controller) board and a Odroid U3. And around 62.5hz when using a MultiWii AIO 2.0 (8bits micro-controller) board and a Raspberry Pi.
@@ -90,7 +89,7 @@ wakeup = 14
 
 ### 32bit boards
 
-If you're using something similar to a naze32 using either baseflight or cleanflight you will be able to ask for attitude and some other commands, but by default you will not be able to use the MSP_SET_RAW_RC to write pilot commands to the multiwii. In order to do that you need to activate (via the baseflight/cleanflight GUI) the ```SerialRX	``` with the specific type for MSP (MultiWii Serial Protocol). The instructions for doing that on baseflight are:
+If you're using something similar to a naze32 using either baseflight or cleanflight you will be able to ask for attitude and some other commands, but by default you will not be able to use the MSP_SET_RAW_RC to write pilot commands to the multiwii. In order to do that you need to activate (via the baseflight/cleanflight GUI) the `SerialRX ` with the specific type for MSP (MultiWii Serial Protocol). The instructions for doing that on baseflight are:
 
 - Open the CLI (while on the baseflight configurator) and type:
 
@@ -110,7 +109,7 @@ Then you can carefully test my example "test-arm-disarm.py"... You will see the 
 
 ## Example:
 
-This code has no ```time.sleep()```, so, its very fast and efficient. The output looks like this when asking or ATTITUDE:
+This code has no `time.sleep()`, so, its very fast and efficient. The output looks like this when asking or ATTITUDE:
 
 ```
 {'timestamp': 1417432436.878697, 'elapsed': 0.016, 'angx': -26.8, 'angy': -24.8, 'heading': -84.0}
@@ -144,14 +143,13 @@ Using different devices and newer boards you can achieve greater rates of commun
 
 [![Drone Pilot - Trajectory controller (raspberry pi + naze32)](http://img.youtube.com/vi/k6tswW7M_-8/0.jpg)](http://www.youtube.com/watch?v=k6tswW7M_-8)
 
-
 ## Caution
 
 This code is still somewhat under development, if you found a bug or a improvement, please let me know!!
 
 ## Why?
 
-I'm doing systems identification of multicopters being flown by me via a multiwii board. Why do I want to do this? I want to do very precise navigation algorithms using a motion capture system. 
+I'm doing systems identification of multicopters being flown by me via a multiwii board. Why do I want to do this? I want to do very precise navigation algorithms using a motion capture system.
 
 Systems identification is a statistical method to build mathematical models of the multicopters, to have excellent control we require a perfect mathematical model. In order to do a good sysid we require data, lots of data, data coming from the board as well as the pilot and the position in the space (motion capture), so, I require raw imu (accelerometers and gyroscopes), pilot commands (rc channels) and position (x,y,z).
 
