@@ -11,6 +11,10 @@ This is a text based / console, no GUI, it works reading data from the multicopt
 To install with pip run the following command from this directory,
 
 ```
+pip install -r requirements.txt
+```
+
+```
 pip install .
 ```
 
