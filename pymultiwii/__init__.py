@@ -103,15 +103,15 @@ class MultiWii:
             print ("\n\nError opening "+self.ser.port+" port.\n"+str(error)+"\n\n")
 
     """Function for sending a command to the board"""
-    def sendCMD(self, data_length, code, data, data_format):
+    def sendCMD(self, data_length, code, data):
         checksum = 0
-        total_data = ['$'.encode('utf-8'), 'M'.encode('utf-8'), '<'.encode('utf-8'), data_length, code] + data
-        for i in struct.pack('<2B' + data_format, *total_data[3:len(total_data)]):
-            checksum = checksum ^ i
+        total_data = [b'$', b'M', b'<', data_length, code] + data
+        for i in struct.pack('<2B%dH' % len(data), *total_data[3:len(total_data)]):
+            checksum = checksum ^ i #ord(i)
         total_data.append(checksum)
         try:
             b = None
-            b = self.ser.write(struct.pack('<3c2B'+ data_format + 'B', *total_data))
+            b = self.ser.write(struct.pack('<3c2B%dHB' % len(data), *total_data))
         except Exception as error:
             print ("\n\nError in sendCMD.")
             print ("("+str(error)+")\n\n")
@@ -200,7 +200,7 @@ class MultiWii:
         data = pd
         print ("PID sending:", data)
         self.sendCMD(30,MultiWii.SET_PID,data)
-        self.sendCMD(0,MultiWii.EEPROM_WRITE,[])
+        self.sendCMD(0,MultiWii.EEPROM_WRITE)
 
     def setVTX(self,band,channel,power):
         band_channel = ((band-1) << 3)|(channel-1)
@@ -210,9 +210,9 @@ class MultiWii:
         different = (self.vtxConfig['band'] != band) | (self.vtxConfig['channel'] != channel) | (self.vtxConfig['power'] != power)
         data = [band_channel,power,self.vtxConfig['pit']]
         while different :
-            self.sendCMD(4,MultiWii.VTX_SET_CONFIG,data, 'H2B')
+            self.sendCMD(4,MultiWii.VTX_SET_CONFIG,data)
             time.sleep(1)
-            self.sendCMD(0,MultiWii.EEPROM_WRITE,[],'')
+            self.sendCMD(0,MultiWii.EEPROM_WRITE,[])
             self.ser.close()
             time.sleep(3)
             self.ser.open()
@@ -227,7 +227,7 @@ class MultiWii:
     def getData(self, cmd):
         try:
             start = time.time()
-            self.sendCMD(0,cmd,[],'')
+            self.sendCMD(0,cmd,[])
             while True:
                 header = self.ser.read().decode('utf-8')
                 if header == '$':
